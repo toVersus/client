@@ -142,14 +142,6 @@ func TestCompute(t *testing.T) {
 			[]int{100},
 		},
 		{
-			"untag 'latest' tag from '@latst' revision",
-			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("latest", "", 100, true)),
-			[]string{"--untag", "latest"},
-			[]string{"@latest"},
-			[]string{""},
-			[]int{100},
-		},
-		{
 			"replace revision pointing to 'latest' tag from 'echo-v1' to 'echo-v2' revision",
 			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("latest", "echo-v1", 50, false), newTarget("", "echo-v2", 50, false)),
 			[]string{"--untag", "latest", "--tag", "echo-v1=old,echo-v2=latest"},
