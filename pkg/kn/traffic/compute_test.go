@@ -79,7 +79,7 @@ func TestCompute(t *testing.T) {
 		},
 		{
 			"split traffic to tags",
-			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "rev-v1", 100, true)),
+			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true), newTarget("", "rev-v1", 0, false)),
 			[]string{"--traffic", "@latest=10,rev-v1=90"},
 			[]string{"@latest", "rev-v1"},
 			[]string{"", ""},
@@ -87,7 +87,7 @@ func TestCompute(t *testing.T) {
 		},
 		{
 			"split traffic to tags with '%' suffix",
-			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "rev-v1", 100, true)),
+			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true), newTarget("", "rev-v1", 0, false)),
 			[]string{"--traffic", "@latest=10%,rev-v1=90%"},
 			[]string{"@latest", "rev-v1"},
 			[]string{"", ""},
