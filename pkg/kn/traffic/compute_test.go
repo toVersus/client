@@ -54,7 +54,7 @@ func newTestTrafficCommand() (*cobra.Command, *flags.Traffic) {
 func TestCompute(t *testing.T) {
 	for _, testCase := range []trafficTestCase{
 		{
-			"assign 'latest' tag to '@latest' revision",
+			"assign 'latest' tag to @latest revision",
 			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true)),
 			[]string{"--tag", "@latest=latest"},
 			[]string{"@latest"},
@@ -187,43 +187,43 @@ func TestCompute(t *testing.T) {
 func TestComputeErrMsg(t *testing.T) {
 	for _, testCase := range []trafficErrorTestCase{
 		{
-			"invalid format for `--traffic` option",
+			"invalid format for --traffic option",
 			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true)),
 			[]string{"--traffic", "@latest=100=latest"},
 			"expecting the value format in value1=value2, given @latest=100=latest",
 		},
 		{
-			"invalid format for `--tag` option",
+			"invalid format for --tag option",
 			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true)),
 			[]string{"--tag", "@latest="},
 			"expecting the value format in value1=value2, given @latest=",
 		},
 		{
-			"repeatedly spliting traffic to '@latest' revision",
+			"repeatedly spliting traffic to @latest revision",
 			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true)),
 			[]string{"--traffic", "@latest=90,@latest=10"},
 			"repetition of identifier @latest is not allowed, use only once with --traffic flag",
 		},
 		{
-			"repeatedly tagging to '@latest' revision not allowed",
+			"repeatedly tagging to @latest revision not allowed",
 			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true)),
 			[]string{"--tag", "@latest=latest,@latest=2"},
 			"repetition of identifier @latest is not allowed, use only once with --tag flag",
 		},
 		{
-			"overwriting tag to '@latest' revision not allowed",
+			"overwriting tag to @latest revision not allowed",
 			append(append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("latest", "", 2, true)), newTarget("stable", "echo-v2", 98, false)),
 			[]string{"--tag", "@latest=stable"},
 			"refusing to overwrite existing tag in service, add flag '--untag stable' in command to untag it",
 		},
 		{
-			"overwriting tag to same revision not allowed",
+			"overwriting tags of others revisions not allowed",
 			append(append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("latest", "", 2, true)), newTarget("stable", "echo-v2", 98, false)),
 			[]string{"--tag", "echo-v2=latest"},
 			"refusing to overwrite existing tag in service, add flag '--untag latest' in command to untag it",
 		},
 		{
-			"invalid format for traffic percentage",
+			"verify error for non integer values given to percent",
 			append(newServiceTraffic([]v1alpha1.TrafficTarget{}), newTarget("", "", 100, true)),
 			[]string{"--traffic", "@latest=100p"},
 			"error converting given 100p to integer value for traffic distribution",
