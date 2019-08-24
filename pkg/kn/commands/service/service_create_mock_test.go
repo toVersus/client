@@ -25,7 +25,6 @@ import (
 
 	"knative.dev/serving/pkg/apis/serving/v1alpha1"
 
-	servinglib "knative.dev/client/pkg/serving"
 	knclient "knative.dev/client/pkg/serving/v1alpha1"
 
 	"knative.dev/client/pkg/util"
@@ -50,7 +49,7 @@ func TestServiceCreateImageMock(t *testing.T) {
 	// Testing:
 	output, err := executeServiceCommand(client, "create", "foo", "--image", "gcr.io/foo/bar:baz")
 	assert.NilError(t, err)
-	assert.Assert(t, util.ContainsAll(output, "created", "foo", "http://foo.example.com", "Waiting"))
+	assert.Assert(t, util.ContainsAll(output, "created", "foo", "default", "http://foo.example.com", "Waiting"))
 
 	// Validate that all recorded API methods have been called
 	r.Validate()
@@ -59,21 +58,19 @@ func TestServiceCreateImageMock(t *testing.T) {
 func TestServiceCreateLabel(t *testing.T) {
 	client := knclient.NewMockKnClient(t)
 
-	r := client.Recorder()
-	r.GetService("foo", nil, errors.NewNotFound(v1alpha1.Resource("service"), "foo"))
-
-	service := getService("foo")
-	expected := map[string]string{
+	labels := map[string]string{
 		"a":     "mouse",
 		"b":     "cookie",
 		"empty": "",
 	}
-	service.ObjectMeta.Labels = expected
-	template, err := servinglib.RevisionTemplateOfService(service)
-	assert.NilError(t, err)
-	template.ObjectMeta.Labels = expected
-	template.Spec.Containers[0].Image = "gcr.io/foo/bar:baz"
-	r.CreateService(service, nil)
+	expected := getService("foo")
+	expected.Spec.Template.Spec.Containers[0].Image = "gcr.io/foo/bar:baz"
+	expected.Labels = labels
+	expected.Spec.Template.Labels = labels
+
+	r := client.Recorder()
+	r.GetService("foo", nil, errors.NewNotFound(v1alpha1.Resource("service"), "foo"))
+	r.CreateService(expected, nil)
 
 	output, err := executeServiceCommand(client, "create", "foo", "--image", "gcr.io/foo/bar:baz", "-l", "a=mouse", "--label", "b=cookie", "--label=empty", "--async", "--revision-name=")
 	assert.NilError(t, err)
